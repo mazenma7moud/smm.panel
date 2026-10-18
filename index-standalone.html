@@ -1,0 +1,722 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>smm panel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--ac:#7c3aed;--nv:#111b4d;--bg:#05060f;--tx:#eef0ff;--mu:color-mix(in srgb,var(--tx) 62%,var(--bg));--radius:14px;
+--card:color-mix(in srgb,var(--nv) 70%,var(--bg));--line:color-mix(in srgb,var(--ac) 25%,transparent)}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:Cairo,Tahoma,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh}
+a{color:inherit;text-decoration:none}
+h1,h2,h3{margin:0 0 .6rem}
+.mu{color:var(--mu)}.sm{font-size:.8rem;padding:.25rem .7rem}
+.wrap{max-width:1100px;margin:auto;padding:2rem 1.2rem}
+.row{display:flex;gap:.75rem;flex-wrap:wrap;align-items:center}.between{justify-content:space-between}
+.grid{display:grid;gap:1rem}.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:1.1rem}
+.btn{display:inline-block;background:var(--ac);color:#fff;border:0;border-radius:calc(var(--radius) * .7);padding:.55rem 1.1rem;font:600 .95rem Cairo,sans-serif;cursor:pointer}
+.btn:hover{filter:brightness(1.15)}.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.ghost{background:transparent;border:1px solid var(--ac)}
+.btn.full{width:100%;margin-top:1rem;text-align:center}
+.inp{width:100%;background:var(--bg);color:var(--tx);border:1px solid var(--line);border-radius:calc(var(--radius) * .7);padding:.55rem .8rem;font:inherit}
+.inp[type=color]{padding:.2rem;height:2.6rem}.inp[type=range]{padding:0}
+.inp:focus,.btn:focus-visible,a:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+label{display:block;font-size:.85rem;color:var(--mu);margin:.7rem 0 .25rem}
+.brand{display:flex;align-items:center;gap:.5rem;font-weight:800;font-size:1.15rem}.bl{font-size:1.5rem}
+.top{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between;align-items:center;padding:.8rem 1.2rem;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--bg);z-index:5}
+.links{display:flex;gap:1.2rem;color:var(--mu);font-size:.9rem}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:2rem;align-items:center}
+.hero h1{font-size:clamp(1.9rem,5vw,3rem);line-height:1.25;font-weight:800}
+.step b{font-size:2rem;color:var(--ac)}
+.scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.9rem;min-width:520px}
+th{color:var(--mu);font-weight:600;text-align:start;padding:.6rem;border-bottom:1px solid var(--line)}
+td{padding:.6rem;border-bottom:1px solid color-mix(in srgb,var(--line) 50%,transparent);vertical-align:middle}
+.tag{padding:.1rem .6rem;border-radius:99px;font-size:.78rem;font-weight:600;white-space:nowrap}
+details{border-bottom:1px solid var(--line);padding:.8rem 0}summary{cursor:pointer;font-weight:600}
+footer{border-top:1px solid var(--line);padding:1.5rem 1.2rem;color:var(--mu);font-size:.9rem}
+.layout{display:flex;min-height:100vh}
+.side{width:15rem;flex:none;background:var(--card);border-inline-end:1px solid var(--line);padding:.8rem;position:sticky;top:0;align-self:flex-start;min-height:100vh}
+.side .brand{padding:.4rem .5rem 1rem}
+.side nav a{display:block;padding:.5rem .8rem;border-radius:9px;color:var(--mu);white-space:nowrap}
+.side nav a.on,.side nav a:hover{background:var(--ac);color:#fff}
+main{flex:1;min-width:0;padding:1.5rem}
+.stat b{display:block;font-size:1.9rem;margin-top:.2rem}
+.auth .brand{margin:1rem 0 .5rem}
+.auth{min-height:100vh;display:grid;place-items:center;padding:1rem}.auth .card{width:100%;max-width:380px}
+.toast{position:fixed;bottom:1rem;left:50%;transform:translateX(-50%);color:#fff;padding:.6rem 1.2rem;border-radius:10px;z-index:99;max-width:90vw}
+.msg{padding:.6rem .8rem;border-radius:10px;margin:.5rem 0;background:var(--bg)}.msg.staff{border:1px solid var(--ac)}
+@media(max-width:760px){
+.g2,.g3,.g4,.hero{grid-template-columns:1fr}.links{display:none}
+.layout{flex-direction:column}.side{width:100%;min-height:0;position:static;border-inline-end:0;border-bottom:1px solid var(--line)}
+.side nav{display:flex;gap:.3rem;overflow-x:auto}main{padding:1rem}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+</style>
+</head>
+<body style="margin:0;background:#05060f;color:#eef0ff;font-family:Tahoma,sans-serif">
+<div id="app"><p style="padding:2rem;text-align:center">جارٍ التحميل…</p></div>
+<script>
+/* لا تظهر شاشة بيضاء أبداً: أي خطأ في التحميل أو التشغيل يُكتب على الشاشة */
+function bootFail(msg){var a=document.getElementById('app');if(!a||a.dataset.ok)return;
+ a.innerHTML='<div style="max-width:560px;margin:3rem auto;padding:1rem;border:1px solid #7c3aed;border-radius:12px"><b>تعذّر تشغيل الموقع</b><p style="opacity:.85;direction:ltr;text-align:left;word-break:break-all">'+String(msg).replace(/</g,'&lt;')+'</p><p style="opacity:.85">افتح الموقع من رابط الخادم (Render أو uvicorn)، أو املأ ملف config.js. وأرسل لي السطر اللي فوق لو المشكلة استمرت.</p></div>'}
+window.addEventListener('error',function(e){var t=e.target;if(t&&t.tagName==='SCRIPT')bootFail('Failed to load: '+t.src);else if(!t||t===window)bootFail(e.message+' ('+String(e.filename||'').split('/').pop()+':'+e.lineno+')')},true);
+window.addEventListener('unhandledrejection',function(e){bootFail(e.reason&&e.reason.message||e.reason)});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+// إعدادات عامة (آمنة للعرض في المتصفح). لا تضع service_role key هنا أبداً.
+// - لو شغّلت الموقع عبر uvicorn أو Render: اترك القيم فاضية، وهيتجلب كل شيء تلقائياً.
+// - لو فتحت index.html مباشرة أو استضفت الواجهة منفصلة: املأ القيم التالية.
+window.APP_CONFIG = {
+  supabaseUrl: "",      // مثال: https://xxxx.supabase.co
+  supabaseAnonKey: "",  // anon public key
+  apiBase: ""           // رابط الباك إند، مثال: https://smm-panel.onrender.com  (فاضي لو نفس الدومين)
+};
+
+</script>
+<script>
+/* smm panel – frontend. Talks to Supabase (auth + RLS-protected data) and to /api (FastAPI). */
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const val = id => $('#' + id)?.value.trim();
+const money = n => '$' + Number(n || 0).toFixed(2);
+const ERR = {insufficient_balance:'رصيدك لا يكفي، اشحن رصيدك أولاً.',bad_quantity:'الكمية خارج الحدود المسموحة.',bad_link:'الرابط غير صحيح.',
+ service_unavailable:'الخدمة غير متاحة حالياً.',banned:'الحساب موقوف.',forbidden:'غير مسموح.',reason_required:'اكتب سبب التعديل.',
+ already_refunded:'الطلب مسترد أو ملغي بالفعل.',not_pending:'الدفعة ليست قيد المراجعة.',auth_required:'سجّل الدخول أولاً.',api_url_must_be_https:'رابط الـ API لازم يبدأ بـ https'};
+const LBL = {Pending:'قيد الانتظار',Processing:'قيد التنفيذ',Completed:'مكتمل',Partial:'جزئي',Canceled:'ملغي',Refunded:'مسترد',Failed:'فشل'};
+const COL = {Pending:'#f59e0b',Processing:'#3b82f6',Completed:'#22c55e',Partial:'#a855f7',Canceled:'#94a3b8',Refunded:'#06b6d4',Failed:'#ef4444'};
+const PAY = {pending:'قيد المراجعة',paid:'مدفوع',failed:'فشل',rejected:'مرفوض'};
+const TS = {open:'مفتوحة',in_progress:'قيد المعالجة',closed:'مغلقة'};
+const tag = s => `<span class="tag" style="background:${COL[s]||'#7c3aed'}22;color:${COL[s]||'#a78bfa'}">${LBL[s] || s}</span>`;
+const tbl = (h, r) => `<div class="scroll"><table><thead><tr>${h.map(x => `<th>${x}</th>`).join('')}</tr></thead><tbody>${
+ r.map(x => `<tr>${x.map(c => `<td>${c}</td>`).join('')}</tr>`).join('') || `<tr><td colspan="${h.length}" class="mu">لا توجد بيانات بعد.</td></tr>`}</tbody></table></div>`;
+const stat = (l, v) => `<div class="card stat"><span class="mu">${l}</span><b>${v}</b></div>`;
+const field = (id, l, t = 'text', v = '') => `<label for="${id}">${l}</label><input id="${id}" class="inp" type="${t}" value="${esc(v)}">`;
+const emsg = e => ERR[e?.message] || SBERR[e?.message] || e?.message || 'حدث خطأ';
+
+const uuid = () => (crypto.randomUUID ? crypto.randomUUID() : Date.now() + '-' + Math.random().toString(16).slice(2));
+let sb, me = null, isAdmin = false, HOOK = null, CACHE = {}, ORDER_KEY = uuid();
+let T = {name_ar:'smm panel', name_en:'smm panel', logo:'🌸', logo_url:'', hero_ar:'', hero_en:'', sub_ar:'', sub_en:'', whatsapp:'', telegram:'', email:'', lang:'ar', ac:'#7c3aed', nv:'#111b4d', bg:'#05060f', tx:'#eef0ff', radius:14};
+const PRESETS = {navy:{ac:'#7c3aed', nv:'#111b4d', bg:'#05060f', tx:'#eef0ff'}, ocean:{ac:'#0ea5e9', nv:'#0c2a4a', bg:'#040d1a', tx:'#eaf6ff'}, emerald:{ac:'#10b981', nv:'#0f3326', bg:'#04120c', tx:'#eafff6'},
+ rose:{ac:'#f43f5e', nv:'#3b1020', bg:'#12040a', tx:'#fff0f3'}, gold:{ac:'#f59e0b', nv:'#2f2410', bg:'#100b03', tx:'#fff8e8'}, light:{ac:'#6d28d9', nv:'#ede9fe', bg:'#faf9ff', tx:'#1b1535'}};
+const TXT = {deposit:'إيداع', charge:'خصم', refund:'استرداد', adjustment:'تعديل إداري'}, ROLE = {user:'عميل', admin:'أدمن'};
+const SBERR = {'Invalid login credentials':'بيانات الدخول غير صحيحة', 'User already registered':'هذا البريد مسجل بالفعل', 'Email not confirmed':'لم يتم تفعيل البريد بعد'};
+Object.assign(ERR, {invalid_credentials:'بيانات الدخول غير صحيحة'});
+
+/* ---------- Language (Arabic default, English optional) ---------- */
+let LANG = ''; try { LANG = localStorage.getItem('lang') || ''; } catch (e) {}
+const LOC = () => LANG == 'en' ? 'en-GB' : LOC();
+const EN = Object.fromEntries(`
+المميزات=Features
+طريقة الاستخدام=How it works
+الخدمات=Services
+الأسئلة الشائعة=FAQ
+لوحتي=My dashboard
+تسجيل الدخول=Log in
+إنشاء حساب=Sign up
+كبّر حساباتك على كل المنصات من مكان واحد=Grow your accounts on every platform from one place
+اطلب خدماتك بأسعار واضحة وتابع كل طلب من لوحتك.=Order services at clear prices and track every order from your dashboard.
+ابدأ الآن=Get started
+شوف الأسعار=See prices
+كيف يعمل؟=How does it work?
+أنشئ حسابك، اشحن رصيدك، واختر الخدمة. السعر يظهر قبل التأكيد.=Create your account, add funds and pick a service. The price is shown before you confirm.
+تنفيذ سريع=Fast delivery
+الطلب يُرسل للتنفيذ فور تأكيده.=Your order is sent for processing as soon as you confirm it.
+محفظة واضحة=Clear wallet
+كل خصم وإيداع مسجل في سجل المعاملات.=Every charge and deposit is recorded in your transactions.
+دعم فني=Support
+افتح تذكرة وتابع الرد من حسابك.=Open a ticket and follow the reply from your account.
+أنشئ حسابك واشحن رصيدك=Create your account and add funds
+اختر الخدمة وأدخل الرابط والكمية=Pick a service, enter the link and quantity
+تابع الحالة من سجل الطلبات=Track the status from your orders
+الخدمات والأسعار=Services & prices
+السعر لكل 100 وحدة.=Price per 100 units.
+الرقم=ID
+المنصة=Platform
+الخدمة=Service
+السعر=Price
+الأدنى=Min
+الأقصى=Max
+لا توجد بيانات بعد.=No data yet.
+هل أحتاج كلمة سر حسابي؟=Do I need my account password?
+لا، الرابط العام يكفي.=No, the public link is enough.
+كم يستغرق التنفيذ؟=How long does delivery take?
+يختلف حسب الخدمة والكمية.=It depends on the service and quantity.
+ماذا لو لم يكتمل الطلب؟=What if an order isn't completed?
+يُرد المبلغ المتبقي إلى رصيدك.=The remaining amount is refunded to your balance.
+سياسة الخصوصية=Privacy Policy
+الشروط والأحكام=Terms & Conditions
+سياسة الاسترداد=Refund Policy
+واتساب=WhatsApp
+تيليجرام=Telegram
+الرئيسية=Home
+الرجوع للموقع=Back to site
+إنشاء الحساب=Create account
+دخول=Log in
+اسم المستخدم=Username
+اسم المستخدم أو البريد الإلكتروني=Username or email
+البريد الإلكتروني=Email
+كلمة المرور=Password
+3–20 حرفاً: إنجليزي أو أرقام أو _=3–20 characters: letters, numbers or _
+عندك حساب؟=Already have an account?
+جديد هنا؟=New here?
+سجّل الدخول=Log in
+أنشئ حساباً=Create an account
+طلب جديد=New order
+سجل الطلبات=Orders
+شحن الرصيد=Add funds
+الدعم الفني=Support
+حسابي=My account
+الإحصائيات=Dashboard
+المزودون=Providers
+الطلبات=Orders
+المدفوعات=Payments
+المستخدمون=Users
+التذاكر=Tickets
+سجل العمليات=Audit log
+الثيم والإعدادات=Theme & settings
+لوحة الأدمن=Admin panel
+لوحة العميل=Customer panel
+الموقع=Website
+تسجيل الخروج=Log out
+تذكرة=Ticket
+جارٍ التحميل…=Loading…
+رصيد المحفظة=Wallet balance
+إجمالي الطلبات=Total orders
+قيد التنفيذ=In progress
+لا توجد خدمات متاحة حالياً.=No services available right now.
+المنصة / التصنيف=Platform / category
+الرابط=Link
+الكمية=Quantity
+رصيدك=Your balance
+الإجمالي=Total
+أرسل الطلب=Place order
+الكمية خارج الحدود المسموحة.=Quantity is outside the allowed range.
+رصيدك لا يكفي، اشحن رصيدك أولاً.=Insufficient balance. Add funds first.
+السعر / 100=Price / 100
+الطلب=Order
+التاريخ=Date
+الحالة=Status
+قيد الانتظار=Pending
+مكتمل=Completed
+جزئي=Partial
+ملغي=Canceled
+مسترد=Refunded
+فشل=Failed
+قيد المراجعة=Under review
+مدفوع=Paid
+مرفوض=Rejected
+طلب شحن=Top-up request
+تواصل مع الدعم لمعرفة وسائل الدفع.=Contact support to learn the payment methods.
+وسيلة الدفع=Payment method
+فودافون كاش=Vodafone Cash
+إنستاباي=InstaPay
+أخرى=Other
+المبلغ ($)=Amount ($)
+رقم العملية / ملاحظة=Transaction no. / note
+إرسال طلب الشحن=Submit top-up request
+طلبات الشحن=Top-up requests
+المعاملات=Transactions
+النوع=Type
+المبلغ=Amount
+الرصيد بعدها=Balance after
+السبب=Reason
+إيداع=Deposit
+خصم=Charge
+استرداد=Refund
+تعديل إداري=Admin adjustment
+تذكرة جديدة=New ticket
+الموضوع=Subject
+الرسالة=Message
+إرسال=Send
+العميل=Customer
+الدعم=Support
+ردك=Your reply
+إرسال الرد=Send reply
+مفتوحة=Open
+قيد المعالجة=In progress
+مغلقة=Closed
+فتح=Open
+التذكرة غير موجودة.=Ticket not found.
+تغيير كلمة المرور=Change password
+كلمة المرور الجديدة=New password
+تأكيد كلمة المرور=Confirm password
+حفظ كلمة المرور=Save password
+المبيعات=Sales
+طلبات معلقة=Pending orders
+إضافة / تعديل خدمة=Add / edit service
+اسم الخدمة=Service name
+الوصف=Description
+سعر البيع لكل 1000 ($)=Selling price per 1000 ($)
+المزود (اتركه فارغاً للتنفيذ اليدوي)=Provider (leave empty for manual fulfilment)
+— يدوي —=— Manual —
+رقم الخدمة عند المزود (Service ID)=Provider service ID
+مفعّلة=Active
+متوقفة=Stopped
+الحد الأدنى=Minimum
+الحد الأقصى=Maximum
+حفظ الخدمة=Save service
+التصنيفات=Categories
+اسم تصنيف جديد=New category name
+إضافة=Add
+لا توجد تصنيفات بعد. أضف تصنيفاً أولاً.=No categories yet. Add one first.
+التصنيف=Category
+السعر/1000=Price/1000
+الحدود=Limits
+تعديل=Edit
+إضافة مزود=Add provider
+اسم المزود=Provider name
+رابط الـ API (https)=API URL (https)
+حفظ المزود=Save provider
+المفتاح يُحفظ على الخادم فقط ولا يظهر لأحد بعد الحفظ.=The key is stored on the server only and is never shown after saving.
+مزامنة الطلبات=Sync orders
+تجلب حالة الطلبات قيد التنفيذ من المزودين وتُرجع الأرصدة للملغي والجزئي.=Fetches the status of in-progress orders from providers and refunds canceled or partial ones.
+مزامنة الآن=Sync now
+مفعّل=Active
+معطّل=Disabled
+تعطيل=Disable
+تفعيل=Enable
+خطأ=Error
+المستخدم=User
+الوسيلة=Method
+ملاحظة=Note
+قبول وشحن=Approve & credit
+رفض=Reject
+الدور=Role
+الرصيد=Balance
+موقوف=Suspended
+نشط=Active
+تعديل الرصيد=Adjust balance
+حظر=Ban
+رفع الحظر=Unban
+عميل=Customer
+أدمن=Admin
+العملية=Action
+التفاصيل=Details
+الثيم والألوان=Theme & colors
+كحلي وبنفسجي (الافتراضي)=Navy & violet (default)
+أزرق محيط=Ocean blue
+أخضر زمردي=Emerald
+وردي=Rose
+ذهبي=Gold
+فاتح=Light
+اللون الأساسي=Primary color
+لون البطاقات=Card color
+الخلفية=Background
+لون النص=Text color
+استدارة الزوايا=Corner radius
+الهوية=Branding
+اسم الموقع (عربي)=Site name (Arabic)
+اللوجو (إيموجي أو رمز)=Logo (emoji or symbol)
+أو ارفع صورة اللوجو (PNG/JPG/WEBP حتى 1 ميجا)=Or upload a logo image (PNG/JPG/WEBP up to 1 MB)
+رفع الصورة=Upload image
+استخدام الإيموجي بدل الصورة=Use the emoji instead of the image
+اللغة الافتراضية=Default language
+العربية=Arabic
+محتوى الصفحة الرئيسية والتواصل=Home page content & contact
+عنوان الصفحة الرئيسية (عربي)=Home headline (Arabic)
+وصف الصفحة الرئيسية (عربي)=Home subtitle (Arabic)
+رقم واتساب (مع كود الدولة)=WhatsApp number (with country code)
+يوزر تيليجرام=Telegram username
+بريد التواصل=Contact email
+بيانات الدفع (تظهر للعميل في صفحة الشحن)=Payment details (shown to customers on the top-up page)
+حفظ الإعدادات=Save settings
+تم إرسال طلب الشحن للمراجعة=Top-up request sent for review
+اكتب الموضوع والرسالة=Write a subject and a message
+تم فتح التذكرة=Ticket opened
+تم الإرسال=Sent
+تم حفظ الخدمة=Service saved
+تمت إضافة التصنيف=Category added
+تم حفظ المزود=Provider saved
+تم التحديث=Updated
+تم الاسترداد=Refunded
+تم رفض الدفعة=Payment rejected
+تم قبول الدفعة وشحن الرصيد=Payment approved and balance credited
+تم تعديل الرصيد=Balance adjusted
+تم حفظ الإعدادات=Settings saved
+تم تحديث الحالة=Status updated
+تم تحديث التذكرة=Ticket updated
+تحقق من بريدك لتفعيل الحساب=Check your email to activate your account
+اسم المستخدم 3–20 حرفاً (إنجليزي أو أرقام أو _)=Username must be 3–20 characters (letters, numbers or _)
+كلمة المرور 8 أحرف على الأقل=Password must be at least 8 characters
+كلمتا المرور غير متطابقتين=Passwords do not match
+تم تغيير كلمة المرور=Password changed
+اختر صورة أولاً=Choose an image first
+صورة PNG أو JPG أو WEBP بحد أقصى 1 ميجا=PNG, JPG or WEBP image, 1 MB max
+تم رفع اللوجو — اضغط حفظ الإعدادات=Logo uploaded — click Save settings
+اسم المستخدم مستخدم بالفعل أو غير صالح=Username is taken or invalid
+بيانات الدخول غير صحيحة=Invalid login details
+هذا البريد مسجل بالفعل=This email is already registered
+لم يتم تفعيل البريد بعد=Email not confirmed yet
+المبلغ (موجب للإضافة، سالب للخصم):=Amount (positive to add, negative to deduct):
+سبب التعديل (إلزامي):=Reason for the adjustment (required):
+الرابط غير صحيح.=Invalid link.
+الخدمة غير متاحة حالياً.=Service is currently unavailable.
+الحساب موقوف.=Your account is suspended.
+غير مسموح.=Not allowed.
+اكتب سبب التعديل.=Write the reason for the adjustment.
+الطلب مسترد أو ملغي بالفعل.=The order is already refunded or canceled.
+الدفعة ليست قيد المراجعة.=The payment is not under review.
+سجّل الدخول أولاً.=Please log in first.
+رابط الـ API لازم يبدأ بـ https=The API URL must start with https
+حدث خطأ=Something went wrong
+`.trim().split('\n').filter(l => l.includes('=')).map(l => { const i = l.indexOf('='); return [l.slice(0, i).trim(), l.slice(i + 1).trim()]; }));
+const EN_RE = [[/^تم إنشاء الطلب #(\d+)$/, 'Order #$1 created'], [/^تم تحديث (\d+) طلب$/, '$1 orders updated'], [/^الحد الأدنى (\d+) – الأقصى (\d+)$/, 'Min $1 – Max $2'],
+ [/^استرداد الطلب #(\d+) وإرجاع المبلغ للعميل؟$/, 'Refund order #$1 and return the amount to the customer?']];
+const tr = s => {
+  if (LANG != 'en' || !s) return s; const k = String(s).trim();
+  if (EN[k]) return String(s).replace(k, () => EN[k]);
+  for (const [re, to] of EN_RE) if (re.test(k)) return String(s).replace(k, () => k.replace(re, to));
+  return s;
+};
+function tDom(root) {
+  if (LANG != 'en') return;
+  const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT), ns = []; while (w.nextNode()) ns.push(w.currentNode);
+  ns.forEach(n => { if (n.parentElement?.closest('script,style,[data-nt]')) return; const v = tr(n.nodeValue); if (v !== n.nodeValue) n.nodeValue = v; });
+  root.querySelectorAll('[placeholder]').forEach(e => e.placeholder = tr(e.placeholder));
+}
+const langBtn = () => `<button class="btn ghost sm" data-a="lang" data-nt>${LANG == 'en' ? 'عربي' : 'EN'}</button>`;
+async function apiPublic(path, body) {
+  const r = await fetch((window.APP_CONFIG?.apiBase || '') + path, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)});
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(ERR[j.detail] || j.detail || 'حدث خطأ'); return j;
+}
+const brand = '<a href="#/" class="brand"><span class="bl"></span><span class="bn"></span></a>';
+
+function toast(msg, good = true) {
+  const d = document.createElement('div'); d.className = 'toast'; d.style.background = good ? '#16a34a' : '#dc2626';
+  d.textContent = tr(msg); document.body.append(d); setTimeout(() => d.remove(), 3500);
+}
+const ok = async (p, msg) => { const r = await p; if (r.error) { toast(emsg(r.error), false); return null; } if (msg) toast(msg); return r; };
+async function api(path, body) {
+  const { data } = await sb.auth.getSession();
+  const r = await fetch((window.APP_CONFIG?.apiBase || '') + path, {method:'POST', headers:{'Content-Type':'application/json', Authorization:'Bearer ' + data.session.access_token}, body:JSON.stringify(body || {})});
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(ERR[j.detail] || j.detail || 'حدث خطأ');
+  return j;
+}
+
+const sname = () => (LANG == 'en' ? T.name_en : T.name_ar) || T.name_ar || 'smm panel';
+function applyTheme() {
+  const r = document.documentElement, st = r.style;
+  st.setProperty('--ac', T.ac); st.setProperty('--nv', T.nv); st.setProperty('--bg', T.bg); st.setProperty('--tx', T.tx); st.setProperty('--radius', T.radius + 'px');
+  r.lang = LANG || 'ar'; r.dir = LANG == 'en' ? 'ltr' : 'rtl'; document.title = sname();
+  $$('.bn').forEach(e => e.textContent = sname());
+  $$('.bl').forEach(e => { e.innerHTML = T.logo_url ? `<img src="${esc(T.logo_url)}" alt="" style="height:1.9rem;max-width:7rem;object-fit:contain;border-radius:6px">` : esc(T.logo); });
+}
+async function loadTheme() {
+  const { data } = await sb.from('settings').select('key,value');
+  (data || []).forEach(r => {
+    if (r.key == 'site') { const { colors, ...rest } = r.value || {}; Object.assign(T, rest, colors || {}); }
+    if (r.key == 'payment_info') CACHE.pay = r.value;
+  });
+}
+async function setUser(u) {
+  me = u || null; isAdmin = false;
+  if (me) { const { data } = await sb.from('profiles').select('role').eq('id', me.id).single(); isAdmin = data?.role == 'admin'; }
+}
+
+/* ---------- Public pages ---------- */
+const LEGAL = {
+ privacy:['سياسة الخصوصية','نحتفظ ببيانات حسابك (البريد واسم المستخدم وسجل الطلبات) لتشغيل الخدمة فقط ولا نبيعها. لا نخزن بيانات البطاقات البنكية. (عدّل هذا النص قبل الإطلاق)','Privacy Policy','We keep your account data (email, username, order history) only to run the service and never sell it. We do not store card data. (Edit this text before launch)'],
+ terms:['الشروط والأحكام','الخدمات مخصصة للتسويق المشروع والالتزام بسياسات المنصات. أنت مسؤول عن الروابط التي تطلبها. (عدّل هذا النص قبل الإطلاق)','Terms & Conditions','Services are for legitimate marketing and must follow each platform\'s policies. You are responsible for the links you submit. (Edit this text before launch)'],
+ refund:['سياسة الاسترداد','الطلبات الملغاة أو غير المكتملة يُرد مبلغها المتبقي إلى رصيدك. الطلبات المكتملة لا تُسترد. (عدّل هذا النص قبل الإطلاق)','Refund Policy','Canceled or incomplete orders are refunded to your balance for the remaining amount. Completed orders are not refunded. (Edit this text before launch)']};
+const legal = k => { const L = LEGAL[k], en = LANG == 'en'; return `<header class="top">${brand}<div class="row">${langBtn()}<a class="btn ghost" href="#/">الرئيسية</a></div></header><div class="wrap"><h1>${en ? L[2] : L[0]}</h1><p class="mu">${en ? L[3] : L[1]}</p></div>`; };
+const contacts = () => [T.whatsapp && `<a href="https://wa.me/${esc(T.whatsapp.replace(/\D/g, ''))}" target="_blank" rel="noopener">واتساب</a>`,
+ T.telegram && `<a href="https://t.me/${esc(T.telegram.replace(/^@/, ''))}" target="_blank" rel="noopener">تيليجرام</a>`, T.email && `<a href="mailto:${esc(T.email)}">${esc(T.email)}</a>`].filter(Boolean).join('');
+async function landing() {
+  const [a, b] = await Promise.all([sb.from('public_services').select('*').order('id'), sb.from('categories').select('*').eq('active', true)]);
+  const cn = Object.fromEntries((b.data || []).map(c => [c.id, c.name]));
+  const rows = (a.data || []).map(s => [s.id, esc(cn[s.category_id] || '-'), esc(s.name), money(s.price_per_1000 / 10), s.min_qty, s.max_qty]);
+  return `<header class="top">${brand}<nav class="links"><a href="#features">المميزات</a><a href="#how">طريقة الاستخدام</a><a href="#services">الخدمات</a><a href="#faq">الأسئلة الشائعة</a></nav>
+  <div class="row">${langBtn()}${me ? '<a class="btn" href="#/app/home">لوحتي</a>' : '<a class="btn ghost" href="#/login">تسجيل الدخول</a><a class="btn" href="#/register">إنشاء حساب</a>'}</div></header>
+  <section class="wrap hero"><div><h1>${esc((LANG == 'en' ? T.hero_en : T.hero_ar) || 'كبّر حساباتك على كل المنصات من مكان واحد')}</h1><p class="mu">${esc((LANG == 'en' ? T.sub_en : T.sub_ar) || 'اطلب خدماتك بأسعار واضحة وتابع كل طلب من لوحتك.')}</p>
+  <div class="row"><a class="btn" href="#/register">ابدأ الآن</a><a class="btn ghost" href="#services">شوف الأسعار</a></div></div>
+  <div class="card"><h3>كيف يعمل؟</h3><p class="mu">أنشئ حسابك، اشحن رصيدك، واختر الخدمة. السعر يظهر قبل التأكيد.</p></div></section>
+  <section id="features" class="wrap grid g3">${[['⚡','تنفيذ سريع','الطلب يُرسل للتنفيذ فور تأكيده.'],['💳','محفظة واضحة','كل خصم وإيداع مسجل في سجل المعاملات.'],['🛟','دعم فني','افتح تذكرة وتابع الرد من حسابك.']].map(f => `<div class="card"><div style="font-size:2rem">${f[0]}</div><h3>${f[1]}</h3><p class="mu">${f[2]}</p></div>`).join('')}</section>
+  <section id="how" class="wrap"><h2>طريقة الاستخدام</h2><div class="grid g3">${['أنشئ حسابك واشحن رصيدك','اختر الخدمة وأدخل الرابط والكمية','تابع الحالة من سجل الطلبات'].map((t, i) => `<div class="card step row"><b>${i + 1}</b><span>${t}</span></div>`).join('')}</div></section>
+  <section id="services" class="wrap"><h2>الخدمات والأسعار</h2><p class="mu">السعر لكل 100 وحدة.</p><div class="card">${tbl(['الرقم','المنصة','الخدمة','السعر','الأدنى','الأقصى'], rows)}</div></section>
+  <section id="faq" class="wrap"><h2>الأسئلة الشائعة</h2>${[['هل أحتاج كلمة سر حسابي؟','لا، الرابط العام يكفي.'],['كم يستغرق التنفيذ؟','يختلف حسب الخدمة والكمية.'],['ماذا لو لم يكتمل الطلب؟','يُرد المبلغ المتبقي إلى رصيدك.']].map(q => `<details><summary>${q[0]}</summary><p class="mu">${q[1]}</p></details>`).join('')}</section>
+  <footer><div class="row between"><div class="row"><a href="#/legal/privacy">سياسة الخصوصية</a><a href="#/legal/terms">الشروط والأحكام</a><a href="#/legal/refund">سياسة الاسترداد</a></div><div class="row">${contacts()}<span class="bn"></span></div></div></footer>`;
+}
+const authView = reg => `<div class="auth"><div class="card"><div class="row between"><a class="btn ghost sm" href="#/">الرجوع للموقع</a>${langBtn()}</div>${brand}<h2>${reg ? 'إنشاء حساب' : 'تسجيل الدخول'}</h2>
+ ${reg ? field('un', 'اسم المستخدم') + '<small class="mu">3–20 حرفاً: إنجليزي أو أرقام أو _</small>' : ''}${field('em', reg ? 'البريد الإلكتروني' : 'اسم المستخدم أو البريد الإلكتروني', reg ? 'email' : 'text')}${field('pw', 'كلمة المرور', 'password')}
+ <button class="btn full" data-a="auth" data-v="${reg ? 'reg' : 'in'}">${reg ? 'إنشاء الحساب' : 'دخول'}</button>
+ <p class="mu">${reg ? 'عندك حساب؟ <a href="#/login" style="color:var(--ac)">سجّل الدخول</a>' : 'جديد هنا؟ <a href="#/register" style="color:var(--ac)">أنشئ حساباً</a>'}</p></div></div>`;
+
+/* ---------- Dashboard shell ---------- */
+const NAV = {
+ user:[['home','الرئيسية'],['new','طلب جديد'],['services','الخدمات'],['orders','سجل الطلبات'],['funds','شحن الرصيد'],['tickets','الدعم الفني'],['profile','حسابي']],
+ admin:[['home','الإحصائيات'],['services','الخدمات'],['providers','المزودون'],['orders','الطلبات'],['payments','المدفوعات'],['users','المستخدمون'],['tickets','التذاكر'],['logs','سجل العمليات'],['settings','الثيم والإعدادات']]};
+function shell(k, pg, body) {
+  const pre = k == 'user' ? '#/app/' : '#/admin/';
+  return `<div class="layout"><aside class="side">${brand}<nav>${NAV[k].map(([i, l]) => `<a href="${pre + i}" class="${i == pg ? 'on' : ''}">${l}</a>`).join('')}
+  ${k == 'user' && isAdmin ? '<a href="#/admin/home">لوحة الأدمن</a>' : ''}${k == 'admin' ? '<a href="#/app/home">لوحة العميل</a>' : ''}<a href="#/">الموقع</a><a href="#" data-a="lang" data-nt>${LANG == 'en' ? 'عربي' : 'English'}</a><a href="#" data-a="logout">تسجيل الخروج</a></nav></aside>
+  <main><h1>${(NAV[k].find(x => x[0] == pg) || [0, 'تذكرة'])[1]}</h1>${body}</main></div>`;
+}
+async function svcMap() {
+  const { data } = await sb.from('public_services').select('id,name,category_id,price_per_1000,min_qty,max_qty');
+  CACHE.sv = data || []; return Object.fromEntries(CACHE.sv.map(s => [s.id, s]));
+}
+async function ticketList(admin) {
+  const { data } = await sb.from('support_tickets').select('*').order('id', {ascending:false});
+  const p = admin ? 'admin' : 'app';
+  const list = `<div class="card"><h3>التذاكر</h3>${tbl(['#','الموضوع','الحالة',''], (data || []).map(t => [t.id, esc(t.subject), TS[t.status], `<a class="btn ghost sm" href="#/${p}/ticket-${t.id}">فتح</a>`]))}</div>`;
+  return admin ? list : `<div class="grid g2"><div class="card"><h3>تذكرة جديدة</h3>${field('tsub', 'الموضوع')}<label for="tbody">الرسالة</label><textarea id="tbody" class="inp" rows="4"></textarea><button class="btn full" data-a="newticket">إرسال</button></div>${list}</div>`;
+}
+async function ticketThread(id, admin) {
+  const [t, m] = await Promise.all([sb.from('support_tickets').select('*').eq('id', id).single(), sb.from('ticket_messages').select('*').eq('ticket_id', id).order('id')]);
+  if (!t.data) return '<p class="mu">التذكرة غير موجودة.</p>';
+  return `<div class="card"><h3>${esc(t.data.subject)} <span class="mu">#${id}</span></h3>${(m.data || []).map(x => `<div class="msg ${x.is_staff ? 'staff' : ''}"><small class="mu">${x.is_staff ? 'الدعم' : 'العميل'}</small><div>${esc(x.body)}</div></div>`).join('')}
+  <label for="rb">ردك</label><textarea id="rb" class="inp" rows="3"></textarea><div class="row"><button class="btn" data-a="reply" data-v="${id}" data-s="${admin ? 1 : 0}">إرسال الرد</button>
+  ${admin ? `<select class="inp" style="width:auto" data-c="tstatus" data-v="${id}">${Object.entries(TS).map(([k, v]) => `<option value="${k}" ${k == t.data.status ? 'selected' : ''}>${v}</option>`).join('')}</select>` : ''}</div></div>`;
+}
+
+const V = {user:{
+ async home() {
+  const [w, o] = await Promise.all([sb.from('wallets').select('balance').single(), sb.from('orders').select('status')]);
+  const os = o.data || [];
+  return `<div class="grid g3">${stat('رصيد المحفظة', money(w.data?.balance)) + stat('إجمالي الطلبات', os.length) + stat('قيد التنفيذ', os.filter(x => ['Pending', 'Processing'].includes(x.status)).length)}</div>`;
+ },
+ async new() {
+  const [c, , w] = await Promise.all([sb.from('categories').select('*').eq('active', true).order('sort'), svcMap(), sb.from('wallets').select('balance').single()]);
+  CACHE.bal = +(w.data?.balance || 0);
+  if (!(c.data || []).length) return '<p class="mu">لا توجد خدمات متاحة حالياً.</p>';
+  HOOK = () => {
+   const calc = () => {
+    const s = CACHE.sv.find(x => x.id == val('ns')); if (!s) { $('#nb').disabled = true; return; }
+    const q = +val('nq'), t = s.price_per_1000 * q / 1000, range = q < s.min_qty || q > s.max_qty, low = t > CACHE.bal;
+    $('#ni').textContent = tr(`الحد الأدنى ${s.min_qty} – الأقصى ${s.max_qty}`); $('#nt').textContent = money(t);
+    $('#nw').textContent = tr(range ? 'الكمية خارج الحدود المسموحة.' : low ? 'رصيدك لا يكفي، اشحن رصيدك أولاً.' : '');
+    $('#nb').disabled = range || low || !val('nl');
+   };
+   const fill = () => { $('#ns').innerHTML = CACHE.sv.filter(s => s.category_id == val('nc')).map(s => `<option value="${s.id}">${esc(s.name)}</option>`).join(''); calc(); };
+   $('#nc').onchange = fill; ['ns', 'nq', 'nl'].forEach(i => $('#' + i).oninput = calc); fill();
+  };
+  return `<div class="card" style="max-width:520px"><label for="nc">المنصة / التصنيف</label><select id="nc" class="inp">${c.data.map(x => `<option value="${x.id}">${esc(x.name)}</option>`).join('')}</select>
+  <label for="ns">الخدمة</label><select id="ns" class="inp"></select><small id="ni" class="mu"></small>${field('nl', 'الرابط', 'url')}${field('nq', 'الكمية', 'number', 1000)}
+  <div class="row between" style="margin-top:1rem"><span class="mu">رصيدك</span><b>${money(CACHE.bal)}</b></div>
+  <div class="row between"><span class="mu">الإجمالي</span><b id="nt"></b></div><p id="nw" style="color:#f87171"></p><button id="nb" class="btn full" data-a="order">أرسل الطلب</button></div>`;
+ },
+ async services() {
+  const [m, c] = await Promise.all([svcMap(), sb.from('categories').select('*')]); const cn = Object.fromEntries((c.data || []).map(x => [x.id, x.name]));
+  return `<div class="card">${tbl(['الرقم','المنصة','الخدمة','السعر / 100','الأدنى','الأقصى'], Object.values(m).map(s => [s.id, esc(cn[s.category_id] || '-'), esc(s.name), money(s.price_per_1000 / 10), s.min_qty, s.max_qty]))}</div>`;
+ },
+ async orders() {
+  const [m, o] = await Promise.all([svcMap(), sb.from('orders').select('*').order('id', {ascending:false})]);
+  return `<div class="card">${tbl(['الطلب','الخدمة','الكمية','السعر','الحالة','التاريخ'], (o.data || []).map(x => ['#' + x.id, esc(m[x.service_id]?.name || '-'), x.quantity, money(x.total), tag(x.status), new Date(x.created_at).toLocaleDateString(LOC())]))}</div>`;
+ },
+ async funds() {
+  const [p, t] = await Promise.all([sb.from('payments').select('*').order('id', {ascending:false}), sb.from('transactions').select('*').order('id', {ascending:false}).limit(50)]);
+  return `<div class="grid g2"><div class="card"><h3>طلب شحن</h3><p class="mu" style="white-space:pre-wrap">${esc(CACHE.pay || 'تواصل مع الدعم لمعرفة وسائل الدفع.')}</p>
+  <label for="pm">وسيلة الدفع</label><select id="pm" class="inp"><option value="فودافون كاش">فودافون كاش</option><option value="إنستاباي">إنستاباي</option><option value="أخرى">أخرى</option></select>${field('pa', 'المبلغ ($)', 'number')}${field('pn', 'رقم العملية / ملاحظة')}
+  <button class="btn full" data-a="deposit">إرسال طلب الشحن</button></div>
+  <div class="card"><h3>طلبات الشحن</h3>${tbl(['#','المبلغ','الحالة'], (p.data || []).map(x => [x.id, money(x.amount), PAY[x.status]]))}</div></div>
+  <div class="card" style="margin-top:1rem"><h3>المعاملات</h3>${tbl(['التاريخ','النوع','المبلغ','الرصيد بعدها','السبب'], (t.data || []).map(x => [new Date(x.created_at).toLocaleDateString(LOC()), TXT[x.type] || x.type, money(x.amount), money(x.balance_after), esc(x.reason)]))}</div>`;
+ },
+ async profile() {
+  const { data } = await sb.from('profiles').select('username').eq('id', me.id).single();
+  return `<div class="card" style="max-width:480px"><p><span class="mu">اسم المستخدم</span><br><b dir="ltr">${esc(data?.username)}</b></p><p><span class="mu">البريد الإلكتروني</span><br><b dir="ltr">${esc(me.email)}</b></p>
+  <h3>تغيير كلمة المرور</h3>${field('np', 'كلمة المرور الجديدة', 'password')}${field('np2', 'تأكيد كلمة المرور', 'password')}<button class="btn full" data-a="chpw">حفظ كلمة المرور</button></div>`;
+ },
+ tickets: () => ticketList(false)},
+admin:{
+ async home() {
+  const [u, o] = await Promise.all([sb.from('profiles').select('id', {count:'exact', head:true}), sb.from('orders').select('total,status')]); const os = o.data || [];
+  const rev = os.filter(x => !['Refunded', 'Canceled'].includes(x.status)).reduce((a, x) => a + +x.total, 0);
+  return `<div class="grid g4">${stat('المستخدمون', u.count ?? 0) + stat('الطلبات', os.length) + stat('المبيعات', money(rev)) + stat('طلبات معلقة', os.filter(x => x.status == 'Pending').length)}</div>`;
+ },
+ async services() {
+  const [s, c, p] = await Promise.all([sb.from('services').select('*').order('id'), sb.from('categories').select('*').order('sort'), sb.from('providers').select('id,name')]);
+  CACHE.asv = s.data || []; const cn = Object.fromEntries((c.data || []).map(x => [x.id, x.name]));
+  const opt = (a, sel) => a.map(x => `<option value="${x.id}" ${x.id == sel ? 'selected' : ''}>${esc(x.name)}</option>`).join('');
+  return `<div class="grid g2"><div class="card"><h3>إضافة / تعديل خدمة</h3><input type="hidden" id="sid">${field('sname', 'اسم الخدمة')}
+  <label for="scat">المنصة / التصنيف</label><select id="scat" class="inp">${opt(c.data || [])}</select><label for="sdesc">الوصف</label><textarea id="sdesc" class="inp" rows="2"></textarea>
+  ${field('sprice', 'سعر البيع لكل 1000 ($)', 'number')}<div class="grid g2"><div>${field('smin', 'الحد الأدنى', 'number')}</div><div>${field('smax', 'الحد الأقصى', 'number')}</div></div>
+  <label for="sprov">المزود (اتركه فارغاً للتنفيذ اليدوي)</label><select id="sprov" class="inp"><option value="">— يدوي —</option>${opt(p.data || [])}</select>${field('spsid', 'رقم الخدمة عند المزود (Service ID)')}
+  <label class="row"><input type="checkbox" id="sactive" checked> مفعّلة</label><button class="btn full" data-a="savesvc">حفظ الخدمة</button></div>
+  <div class="card"><h3>التصنيفات</h3><div class="row"><input id="cname" class="inp" style="flex:1" placeholder="اسم تصنيف جديد"><button class="btn" data-a="addcat">إضافة</button></div>
+  <p class="mu">${(c.data || []).map(x => esc(x.name)).join(' · ') || 'لا توجد تصنيفات بعد. أضف تصنيفاً أولاً.'}</p></div></div>
+  <div class="card" style="margin-top:1rem">${tbl(['ID','الاسم','التصنيف','السعر/1000','الحدود','الحالة',''], CACHE.asv.map(x => [x.id, esc(x.name), esc(cn[x.category_id] || '-'), money(x.price_per_1000), `${x.min_qty}–${x.max_qty}`, x.active ? 'مفعّلة' : 'متوقفة', `<button class="btn ghost sm" data-a="editsvc" data-v="${x.id}">تعديل</button>`]))}</div>`;
+ },
+ async providers() {
+  const { data } = await sb.from('providers').select('*').order('id');
+  return `<div class="grid g2"><div class="card"><h3>إضافة مزود</h3>${field('pname', 'اسم المزود')}${field('purl', 'رابط الـ API (https)', 'url')}${field('pkey', 'API Key', 'password')}
+  <button class="btn full" data-a="addprov">حفظ المزود</button><p class="mu">المفتاح يُحفظ على الخادم فقط ولا يظهر لأحد بعد الحفظ.</p></div>
+  <div class="card"><h3>مزامنة الطلبات</h3><p class="mu">تجلب حالة الطلبات قيد التنفيذ من المزودين وتُرجع الأرصدة للملغي والجزئي.</p><button class="btn" data-a="sync">مزامنة الآن</button></div></div>
+  <div class="card" style="margin-top:1rem">${tbl(['ID','الاسم','الرابط','الحالة',''], (data || []).map(x => [x.id, esc(x.name), esc(x.api_url), x.active ? 'مفعّل' : 'معطّل', `<button class="btn ghost sm" data-a="togprov" data-v="${x.id}" data-s="${x.active ? 0 : 1}">${x.active ? 'تعطيل' : 'تفعيل'}</button>`]))}</div>`;
+ },
+ async orders() {
+  const { data } = await sb.from('orders').select('*').order('id', {ascending:false}).limit(200);
+  const SEL = ['Pending', 'Processing', 'Completed', 'Partial', 'Failed'];
+  return `<div class="card">${tbl(['#','الخدمة','الرابط','الكمية','الإجمالي','الحالة','خطأ',''], (data || []).map(x => ['#' + x.id, x.service_id, `<span dir="ltr">${esc(x.link)}</span>`, x.quantity, money(x.total),
+   ['Refunded', 'Canceled'].includes(x.status) ? tag(x.status) : `<select class="inp" style="width:auto" data-c="ostatus" data-v="${x.id}">${SEL.map(s => `<option value="${s}" ${s == x.status ? 'selected' : ''}>${LBL[s]}</option>`).join('')}</select>`,
+   esc(x.error || ''), ['Refunded', 'Canceled'].includes(x.status) ? '' : `<button class="btn ghost sm" data-a="refund" data-v="${x.id}">استرداد</button>`]))}</div>`;
+ },
+ async payments() {
+  const { data } = await sb.from('payments').select('*').order('id', {ascending:false}).limit(200);
+  return `<div class="card">${tbl(['#','المستخدم','الوسيلة','المبلغ','ملاحظة','الحالة',''], (data || []).map(x => [x.id, esc(x.user_id.slice(0, 8)), esc(x.method), money(x.amount), esc(x.note), PAY[x.status], x.status == 'pending' ? `<button class="btn sm" data-a="approve" data-v="${x.id}">قبول وشحن</button> <button class="btn ghost sm" data-a="reject" data-v="${x.id}">رفض</button>` : '']))}</div>`;
+ },
+ async users() {
+  const { data } = await sb.from('profiles').select('id,username,role,banned,wallets(balance)').order('created_at', {ascending:false}).limit(200);
+  return `<div class="card">${tbl(['المستخدم','الدور','الرصيد','الحالة',''], (data || []).map(x => [esc(x.username) + `<br><small class="mu">${x.id.slice(0, 8)}</small>`, ROLE[x.role] || x.role, money(x.wallets?.balance), x.banned ? 'موقوف' : 'نشط',
+   `<button class="btn ghost sm" data-a="adjust" data-v="${x.id}">تعديل الرصيد</button> <button class="btn ghost sm" data-a="ban" data-v="${x.id}" data-s="${x.banned ? 0 : 1}" data-r="${x.role}">${x.banned ? 'رفع الحظر' : 'حظر'}</button>`]))}</div>`;
+ },
+ tickets: () => ticketList(true),
+ async logs() {
+  const { data } = await sb.from('audit_logs').select('*').order('id', {ascending:false}).limit(100);
+  return `<div class="card">${tbl(['التاريخ','العملية','التفاصيل'], (data || []).map(x => [new Date(x.created_at).toLocaleString(LOC()), esc(x.action), `<small dir="ltr">${esc(JSON.stringify(x.details))}</small>`]))}</div>`;
+ },
+ async settings() {
+  const lang = T.lang == 'en' ? 'en' : 'ar';
+  return `<div class="card" style="max-width:680px"><h3>الثيم والألوان</h3>
+  <div class="row">${[['navy', 'كحلي وبنفسجي (الافتراضي)'], ['ocean', 'أزرق محيط'], ['emerald', 'أخضر زمردي'], ['rose', 'وردي'], ['gold', 'ذهبي'], ['light', 'فاتح']].map(p => `<button class="btn ghost sm" data-a="preset" data-v="${p[0]}">${p[1]}</button>`).join('')}</div>
+  <div class="grid g4">${[['tc1', 'اللون الأساسي', T.ac], ['tc2', 'لون البطاقات', T.nv], ['tc3', 'الخلفية', T.bg], ['tc4', 'لون النص', T.tx]].map(c => `<div>${field(c[0], c[1], 'color', c[2])}</div>`).join('')}</div>
+  <label for="trad">استدارة الزوايا</label><input id="trad" type="range" min="0" max="28" value="${T.radius}" class="inp"></div>
+  <div class="card" style="max-width:680px;margin-top:1rem"><h3>الهوية</h3><div class="grid g2"><div>${field('tna', 'اسم الموقع (عربي)', 'text', T.name_ar)}</div><div>${field('tne', 'Site name (English)', 'text', T.name_en)}</div></div>
+  ${field('tl', 'اللوجو (إيموجي أو رمز)', 'text', T.logo)}<label for="tfile">أو ارفع صورة اللوجو (PNG/JPG/WEBP حتى 1 ميجا)</label><input id="tfile" type="file" accept="image/png,image/jpeg,image/webp" class="inp">
+  <div class="row" style="margin-top:.6rem"><button class="btn ghost sm" data-a="uplogo">رفع الصورة</button><button class="btn ghost sm" data-a="rmlogo">استخدام الإيموجي بدل الصورة</button></div>
+  <label for="tlang">اللغة الافتراضية</label><select id="tlang" class="inp"><option value="ar" ${lang == 'ar' ? 'selected' : ''}>العربية</option><option value="en" ${lang == 'en' ? 'selected' : ''}>English</option></select></div>
+  <div class="card" style="max-width:680px;margin-top:1rem"><h3>محتوى الصفحة الرئيسية والتواصل</h3>
+  ${field('thar', 'عنوان الصفحة الرئيسية (عربي)', 'text', T.hero_ar)}${field('then', 'Home headline (English)', 'text', T.hero_en)}${field('tsar', 'وصف الصفحة الرئيسية (عربي)', 'text', T.sub_ar)}${field('tsen', 'Home subtitle (English)', 'text', T.sub_en)}
+  ${field('twa', 'رقم واتساب (مع كود الدولة)', 'text', T.whatsapp)}${field('ttg', 'يوزر تيليجرام', 'text', T.telegram)}${field('tem', 'بريد التواصل', 'email', T.email)}
+  <label for="tp">بيانات الدفع (تظهر للعميل في صفحة الشحن)</label><textarea id="tp" class="inp" rows="3">${esc(CACHE.pay || '')}</textarea><button class="btn full" data-a="savesettings">حفظ الإعدادات</button></div>`;
+ }}};
+V.admin.settings.hook = () => {
+  const read = () => { T = {...T, name_ar:val('tna'), name_en:val('tne'), logo:val('tl'), lang:val('tlang'), ac:val('tc1'), nv:val('tc2'), bg:val('tc3'), tx:val('tc4'), radius:+val('trad'),
+    hero_ar:val('thar'), hero_en:val('then'), sub_ar:val('tsar'), sub_en:val('tsen'), whatsapp:val('twa'), telegram:val('ttg'), email:val('tem')}; applyTheme(); };
+  $$('#tna,#tne,#tl,#tlang,#tc1,#tc2,#tc3,#tc4,#trad,#thar,#then,#tsar,#tsen,#twa,#ttg,#tem').forEach(e => e.oninput = read);
+};
+
+/* ---------- Actions ---------- */
+const A = {
+ async logout() { await sb.auth.signOut(); location.hash = '#/'; },
+ lang() { LANG = LANG == 'en' ? 'ar' : 'en'; try { localStorage.setItem('lang', LANG); } catch (e) {} route(); },
+ async auth(v) {
+  const id = val('em'), pw = $('#pw').value;
+  try {
+   if (v == 'reg') {
+    const un = val('un');
+    if (!/^[A-Za-z0-9_]{3,20}$/.test(un)) return toast('اسم المستخدم 3–20 حرفاً (إنجليزي أو أرقام أو _)', false);
+    if (pw.length < 8) return toast('كلمة المرور 8 أحرف على الأقل', false);
+    const r = await sb.auth.signUp({email:id, password:pw, options:{data:{username:un}}}); if (r.error) throw r.error;
+    if (!r.data.session) return toast('تحقق من بريدك لتفعيل الحساب');
+   } else if (id.includes('@')) {
+    const r = await sb.auth.signInWithPassword({email:id, password:pw}); if (r.error) throw r.error;
+   } else {
+    const j = await apiPublic('/api/login', {identifier:id, password:pw});
+    const r = await sb.auth.setSession({access_token:j.access_token, refresh_token:j.refresh_token}); if (r.error) throw r.error;
+   }
+   location.hash = '#/app/home';
+  } catch (e) { toast(/database error/i.test(e.message || '') ? 'اسم المستخدم مستخدم بالفعل أو غير صالح' : emsg(e), false); }
+ },
+ async order() {
+  const b = $('#nb'); b.disabled = true;
+  try { const r = await api('/api/orders', {service_id:+val('ns'), link:val('nl'), quantity:+val('nq'), key:ORDER_KEY}); toast('تم إنشاء الطلب #' + r.order_id); ORDER_KEY = uuid(); location.hash = '#/app/orders'; }
+  catch (e) { toast(e.message, false); b.disabled = false; }
+ },
+ async deposit() { if (await ok(sb.rpc('request_deposit', {p_method:val('pm'), p_amount:+val('pa'), p_note:val('pn')}), 'تم إرسال طلب الشحن للمراجعة')) route(); },
+ async newticket() {
+  if (!val('tsub') || !val('tbody')) return toast('اكتب الموضوع والرسالة', false);
+  const t = await ok(sb.from('support_tickets').insert({user_id:me.id, subject:val('tsub')}).select('id').single()); if (!t) return;
+  await ok(sb.from('ticket_messages').insert({ticket_id:t.data.id, sender:me.id, body:val('tbody')}), 'تم فتح التذكرة'); route();
+ },
+ async reply(id, b) { if (!val('rb')) return; if (await ok(sb.from('ticket_messages').insert({ticket_id:+id, sender:me.id, is_staff:b.dataset.s == '1', body:val('rb')}), 'تم الإرسال')) route(); },
+ async savesvc() {
+  const row = {name:val('sname'), category_id:+val('scat') || null, description:val('sdesc'), price_per_1000:+val('sprice'), min_qty:+val('smin'), max_qty:+val('smax'),
+   provider_id:+val('sprov') || null, provider_service_id:val('spsid') || null, active:$('#sactive').checked};
+  if (val('sid')) row.id = +val('sid');
+  if (await ok(sb.from('services').upsert(row), 'تم حفظ الخدمة')) route();
+ },
+ editsvc(id) {
+  const s = CACHE.asv.find(x => x.id == id); if (!s) return;
+  const set = (k, v) => $('#' + k).value = v ?? ''; set('sid', s.id); set('sname', s.name); set('scat', s.category_id); set('sdesc', s.description); set('sprice', s.price_per_1000);
+  set('smin', s.min_qty); set('smax', s.max_qty); set('sprov', s.provider_id); set('spsid', s.provider_service_id); $('#sactive').checked = s.active; scrollTo(0, 0);
+ },
+ async addcat() { if (val('cname') && await ok(sb.from('categories').insert({name:val('cname')}), 'تمت إضافة التصنيف')) route(); },
+ async addprov() { try { await api('/api/admin/provider', {name:val('pname'), api_url:val('purl'), api_key:val('pkey')}); toast('تم حفظ المزود'); route(); } catch (e) { toast(e.message, false); } },
+ async togprov(id, b) { if (await ok(sb.from('providers').update({active:b.dataset.s == '1'}).eq('id', id))) route(); },
+ async sync() { try { const r = await api('/api/admin/sync'); toast(`تم تحديث ${r.updated} طلب`); } catch (e) { toast(e.message, false); } },
+ async refund(id) { if (confirm(tr('استرداد الطلب #' + id + ' وإرجاع المبلغ للعميل؟')) && await ok(sb.rpc('refund_order', {p_id:+id}), 'تم الاسترداد')) route(); },
+ async approve(id) { if (await ok(sb.rpc('approve_payment', {p_id:+id}), 'تم قبول الدفعة وشحن الرصيد')) route(); },
+ async adjust(id) {
+  const amt = prompt(tr('المبلغ (موجب للإضافة، سالب للخصم):')); if (!amt) return; const why = prompt(tr('سبب التعديل (إلزامي):')); if (!why) return;
+  if (await ok(sb.rpc('admin_adjust_balance', {p_user:id, p_amount:+amt, p_reason:why}), 'تم تعديل الرصيد')) route();
+ },
+ async ban(id, b) { if (await ok(sb.rpc('admin_set_user', {p_user:id, p_banned:b.dataset.s == '1', p_role:b.dataset.r}), 'تم التحديث')) route(); },
+ preset(k) { Object.assign(T, PRESETS[k]); $('#tc1').value = T.ac; $('#tc2').value = T.nv; $('#tc3').value = T.bg; $('#tc4').value = T.tx; applyTheme(); },
+ async uplogo() {
+  const f = $('#tfile').files[0]; if (!f) return toast('اختر صورة أولاً', false);
+  if (!['image/png', 'image/jpeg', 'image/webp'].includes(f.type) || f.size > 1048576) return toast('صورة PNG أو JPG أو WEBP بحد أقصى 1 ميجا', false);
+  const path = 'logo-' + Date.now() + '.' + f.type.split('/')[1];
+  if (!await ok(sb.storage.from('branding').upload(path, f, {contentType:f.type}))) return;
+  T.logo_url = sb.storage.from('branding').getPublicUrl(path).data.publicUrl; applyTheme(); toast('تم رفع اللوجو — اضغط حفظ الإعدادات');
+ },
+ rmlogo() { T.logo_url = ''; applyTheme(); },
+ async reject(id) { if (await ok(sb.rpc('reject_payment', {p_id:+id}), 'تم رفض الدفعة')) route(); },
+ async chpw() {
+  const a = $('#np').value; if (a.length < 8) return toast('كلمة المرور 8 أحرف على الأقل', false); if (a != $('#np2').value) return toast('كلمتا المرور غير متطابقتين', false);
+  if (await ok(sb.auth.updateUser({password:a}), 'تم تغيير كلمة المرور')) { $('#np').value = ''; $('#np2').value = ''; }
+ },
+ async savesettings() {
+  const site = {name_ar:T.name_ar, name_en:T.name_en, logo:T.logo, logo_url:T.logo_url, hero_ar:T.hero_ar, hero_en:T.hero_en, sub_ar:T.sub_ar, sub_en:T.sub_en,
+   whatsapp:T.whatsapp, telegram:T.telegram, email:T.email, lang:T.lang, radius:T.radius, colors:{ac:T.ac, nv:T.nv, bg:T.bg, tx:T.tx}};
+  if (await ok(sb.from('settings').upsert([{key:'site', value:site, is_public:true}, {key:'payment_info', value:val('tp'), is_public:true}]), 'تم حفظ الإعدادات')) CACHE.pay = val('tp');
+ }};
+document.addEventListener('click', e => { const b = e.target.closest('[data-a]'); if (!b) return; e.preventDefault(); A[b.dataset.a]?.(b.dataset.v, b); });
+document.addEventListener('change', async e => {
+ const c = e.target.dataset?.c; if (!c) return;
+ if (c == 'ostatus') await ok(sb.from('orders').update({status:e.target.value}).eq('id', e.target.dataset.v), 'تم تحديث الحالة');
+ if (c == 'tstatus') await ok(sb.from('support_tickets').update({status:e.target.value}).eq('id', e.target.dataset.v), 'تم تحديث التذكرة');
+});
+
+/* ---------- Router ---------- */
+async function route() {
+  const p = location.hash.replace(/^#\/?/, '').split('/'), a = $('#app'); HOOK = null;
+  try {
+    if (p[0] == 'login' || p[0] == 'register') a.innerHTML = authView(p[0] == 'register');
+    else if (p[0] == 'legal' && LEGAL[p[1]]) a.innerHTML = legal(p[1]);
+    else if (p[0] == 'app' || p[0] == 'admin') {
+      if (!me) { location.hash = '#/login'; return; }
+      if (p[0] == 'admin' && !isAdmin) { location.hash = '#/app/home'; return; }
+      const k = p[0] == 'app' ? 'user' : 'admin', pg = p[1] || 'home';
+      a.innerHTML = shell(k, pg, '<p class="mu">جارٍ التحميل…</p>');
+      const body = pg.startsWith('ticket-') ? await ticketThread(+pg.slice(7), k == 'admin') : await (V[k][pg] || V[k].home)();
+      a.innerHTML = shell(k, pg, body);
+      if (k == 'admin' && pg == 'settings') V.admin.settings.hook();
+    } else a.innerHTML = await landing();
+  } catch (e) { a.innerHTML = `<div class="wrap"><div class="card">حدث خطأ في التحميل: ${esc(e.message)}</div></div>`; }
+  a.dataset.ok = '1'; applyTheme(); tDom($('#app')); HOOK && HOOK();
+}
+async function init() {
+  try {
+    const C = window.APP_CONFIG || {};
+    let url = C.supabaseUrl, anon = C.supabaseAnonKey;
+    if (!url || !anon) {
+      const r = await fetch((C.apiBase || '') + '/api/config');
+      if (!r.ok) throw new Error('تعذر جلب إعدادات Supabase');
+      const j = await r.json(); url = j.url; anon = j.anon;
+    }
+    sb = supabase.createClient(url, anon);
+    const { data } = await sb.auth.getSession(); await setUser(data.session?.user); await loadTheme(); if (!LANG) LANG = T.lang || 'ar';
+    sb.auth.onAuthStateChange(async (ev, s) => { if (ev == 'SIGNED_IN' || ev == 'SIGNED_OUT') { await setUser(s?.user); route(); } });
+    addEventListener('hashchange', () => { const h = location.hash; if (h && !h.startsWith('#/') && h != '#') $(h)?.scrollIntoView(); else route(); });
+    route();
+  } catch (e) {
+    $('#app').dataset.ok = '1';
+    $('#app').innerHTML = `<div class="auth"><div class="card"><h2>الموقع غير مُعدّ بعد</h2><p class="mu">شغّل الموقع عبر الخادم (uvicorn) أو املأ ملف config.js ببيانات Supabase ثم أعد تحميل الصفحة.</p><p class="mu" style="font-size:.8rem">${esc(e.message)}</p></div></div>`;
+  }
+}
+document.addEventListener('keydown', e => { if (e.key == 'Enter' && e.target.closest?.('.auth') && e.target.tagName == 'INPUT') $('[data-a=auth]')?.click(); });
+init();
+
+</script>
+</body>
+</html>

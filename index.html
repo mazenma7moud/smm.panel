@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>smm panel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body style="margin:0;background:#05060f;color:#eef0ff;font-family:Tahoma,sans-serif">
+<div id="app"><p style="padding:2rem;text-align:center">جارٍ التحميل…</p></div>
+<script>
+/* لا تظهر شاشة بيضاء أبداً: أي خطأ في التحميل أو التشغيل يُكتب على الشاشة */
+function bootFail(msg){var a=document.getElementById('app');if(!a||a.dataset.ok)return;
+ a.innerHTML='<div style="max-width:560px;margin:3rem auto;padding:1rem;border:1px solid #7c3aed;border-radius:12px"><b>تعذّر تشغيل الموقع</b><p style="opacity:.85;direction:ltr;text-align:left;word-break:break-all">'+String(msg).replace(/</g,'&lt;')+'</p><p style="opacity:.85">افتح الموقع من رابط الخادم (Render أو uvicorn)، أو املأ ملف config.js. وأرسل لي السطر اللي فوق لو المشكلة استمرت.</p></div>'}
+window.addEventListener('error',function(e){var t=e.target;if(t&&t.tagName==='SCRIPT')bootFail('Failed to load: '+t.src);else if(!t||t===window)bootFail(e.message+' ('+String(e.filename||'').split('/').pop()+':'+e.lineno+')')},true);
+window.addEventListener('unhandledrejection',function(e){bootFail(e.reason&&e.reason.message||e.reason)});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="config.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
